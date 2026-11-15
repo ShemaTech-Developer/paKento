@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#e11d48" />
+  <title>paKento — Cafeteria Debt Ledger</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============ ENTRY SCREEN ============ -->
+  <section id="screen-entry" class="screen active">
+    <div class="entry-box">
+      <div class="logo">
+        <div class="logo-icon">📔</div>
+        <h1>paKento</h1>
+        <p class="tagline">Canteen Credit Book — money the canteen holds for students</p>
+      </div>
+      <div class="divider">staff only</div>
+      <form id="login-form">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="admin" autocomplete="username" required />
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••" autocomplete="current-password" required />
+        <button type="submit" class="btn btn-primary btn-block">🔓 Sign In as Staff</button>
+      </form>
+      <p id="login-error" class="error hidden"></p>
+    </div>
+  </section>
+
+  <!-- ============ STAFF APP ============ -->
+  <section id="screen-app" class="screen">
+
+    <header class="topbar">
+      <div class="topbar-title"><span class="logo-mini">📔</span> paKento</div>
+      <button id="btn-logout" class="icon-btn" title="Log out">⎋</button>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="home">🏠 Today</button>
+      <button class="tab" data-tab="debtors">🔴 Debtors</button>
+      <button class="tab" data-tab="ledger">📅 Timetable</button>
+      <button class="tab" data-tab="record">📝 Record</button>
+      <button class="tab" data-tab="settings">⚙️ Settings</button>
+    </nav>
+
+    <!-- ---------- TODAY ---------- -->
+    <main id="tab-home" class="tab-panel active">
+      <div class="stats-grid">
+        <div class="stat-card red"><span class="stat-value" id="stat-debtors">0</span><span class="stat-label">Students With Money</span></div>
+        <div class="stat-card red"><span class="stat-value" id="stat-owed">0</span><span class="stat-label">Total Canteen Holds</span></div>
+        <div class="stat-card green"><span class="stat-value" id="stat-paid">0</span><span class="stat-label">Used Today</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-newdebt">0</span><span class="stat-label">Money In Today</span></div>
+      </div>
+
+      <h3>Today's ledger — <span id="home-date"></span></h3>
+      <div id="today-list" class="ledger-list"></div>
+    </main>
+
+    <!-- ---------- DEBTORS ---------- -->
+    <main id="tab-debtors" class="tab-panel">
+      <div class="debtors-head">
+        <h3>🔴 Debtors</h3>
+        <button id="btn-select-mode" class="small-btn">🔘 Select</button>
+      </div>
+      <p id="select-hint" class="muted hidden">Tap students to select them, then Clear Selected 👇</p>
+      <input type="search" id="debtors-search" class="search" placeholder="🔍 Search name or class…" />
+      <div id="debtors-list" class="student-list"></div>
+
+      <div id="clear-bar" class="clear-bar hidden">
+        <span id="clear-count">0 selected</span>
+        <button id="btn-clear-selected" class="btn btn-green">🧹 Clear Selected</button>
+      </div>
+      <button id="btn-add-student" class="btn btn-secondary btn-block">✍️ Assign money to a student</button>
+    </main>
+
+    <!-- ---------- TIMETABLE / CALENDAR ---------- -->
+    <main id="tab-ledger" class="tab-panel">
+      <div class="cal-head">
+        <button id="cal-prev" class="icon-btn dark">‹</button>
+        <h3 id="cal-month">Month</h3>
+        <button id="cal-next" class="icon-btn dark">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-legend">
+        <span><i class="dot red"></i> money still held that day</span>
+        <span><i class="dot green"></i> all used up that day</span>
+      </div>
+
+      <h3 id="day-title">Pick a day</h3>
+      <div id="day-list" class="ledger-list"><div class="empty">Tap a date above to see that day's debts</div></div>
+    </main>
+
+    <!-- ---------- RECORD ---------- -->
+    <main id="tab-record" class="tab-panel">
+      <h3>Record money a student gave (replaces the book)</h3>
+      <form id="debt-form" class="form card">
+        <label for="debt-name">Student full name</label>
+        <input type="text" id="debt-name" placeholder="e.g. Jean Eric" required />
+        <label for="debt-class">Class</label>
+        <input type="text" id="debt-class" placeholder="e.g. S1A" required />
+        <label for="debt-amount">Amount the student gave (RWF)</label>
+        <div class="amount-input">
+          <span class="currency">RWF</span>
+          <input type="number" id="debt-amount" min="1" step="1" placeholder="0" required />
+        </div>
+        <div class="quick-amounts">
+          <button type="button" class="chip" data-amt="100">100</button>
+          <button type="button" class="chip" data-amt="200">200</button>
+          <button type="button" class="chip" data-amt="500">500</button>
+          <button type="button" class="chip" data-amt="1000">1000</button>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">🟢 Record Money</button>
+      </form>
+    </main>
+
+    <!-- ---------- SETTINGS ---------- -->
+    <main id="tab-settings" class="tab-panel">
+      <h3>⚙️ Admin Settings</h3>
+      <div class="card">
+        <h4>Change password</h4>
+        <form id="password-form" class="form">
+          <label for="pw-old">Current password</label>
+          <input type="password" id="pw-old" required autocomplete="current-password" />
+          <label for="pw-new">New password</label>
+          <input type="password" id="pw-new" required minlength="6" autocomplete="new-password" />
+          <label for="pw-new2">Repeat new password</label>
+          <input type="password" id="pw-new2" required minlength="6" autocomplete="new-password" />
+          <button type="submit" class="btn btn-primary btn-block">🔑 Update Password</button>
+        </form>
+      </div>
+      <div class="card">
+        <h4>📜 History</h4>
+        <p class="muted">All money that was fully used up and cleared from the active list.</p>
+        <button id="btn-open-history" class="btn btn-secondary btn-block">📜 Open History</button>
+        <div id="history-box" class="hidden"></div>
+      </div>
+      <div class="card muted-card">
+        <h4>About paKento</h4>
+        <p class="muted">Digital canteen credit book — money students hand to the canteen is recorded and held for them.<br/>Every entry is saved with date, time and who wrote it. Credit is never deleted — it is only used up when students buy, so the record stays honest.</p>
+      </div>
+    </main>
+
+    <!-- ---------- EDIT STUDENT (floating tab) ---------- -->
+    <div id="modal-edit" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-head">
+          <h3>✏️ Edit Student</h3>
+          <button class="icon-btn dark" data-close="modal-edit">✕</button>
+        </div>
+
+        <div class="detail-owes" id="edit-owes-box">
+          <span class="muted small" id="edit-owes-label">CANTEEN HOLDS</span>
+          <div><span id="edit-owes">0</span> <span class="currency">RWF</span></div>
+        </div>
+        <div class="detail-meta">Student no. <span id="edit-no"></span></div>
+
+        <form id="edit-form" class="form">
+          <label for="edit-name">Full name</label>
+          <input type="text" id="edit-name" required />
+          <label for="edit-class">Class</label>
+          <input type="text" id="edit-class" required />
+
+          <div class="adjust-row">
+            <label for="edit-amount">Money in ➕ / money used ➖ (RWF)</label>
+            <div class="amount-input">
+              <span class="currency">RWF</span>
+              <input type="number" id="edit-amount" min="1" step="1" placeholder="e.g. 500" />
+            </div>
+            <div class="quick-amounts">
+              <button type="button" class="chip" data-amt="100">100</button>
+              <button type="button" class="chip" data-amt="200">200</button>
+              <button type="button" class="chip" data-amt="500">500</button>
+              <button type="button" class="chip" data-amt="1000">1000</button>
+            </div>
+            <div class="pm-buttons">
+              <button type="button" id="pm-plus" class="pm plus" title="Student gave more money">➕ Money In</button>
+              <button type="button" id="pm-minus" class="pm minus" title="Student used money (bought)">➖ Money Used</button>
+            </div>
+          </div>
+
+          <div id="adjust-note" class="adjust-note hidden"></div>
+
+          <button type="submit" class="btn btn-primary btn-block">💾 Save Changes</button>
+        </form>
+
+        <h4>History</h4>
+        <div id="edit-history" class="history"></div>
+      </div>
+    </div>
+
+    <!-- ---------- ADD STUDENT (modal) ---------- -->
+    <div id="modal-add" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-head">
+          <h3>Record money given</h3>
+          <button class="icon-btn dark" data-close="modal-add">✕</button>
+        </div>
+        <form id="add-student-form" class="form">
+          <label for="new-name">Full name</label>
+          <input type="text" id="new-name" placeholder="e.g. Aline M." required />
+          <label for="new-class">Class</label>
+          <input type="text" id="new-class" placeholder="e.g. S2B" required />
+          <label for="new-amount">Amount given (RWF)</label>
+          <input type="number" id="new-amount" min="1" step="1" placeholder="0" required />
+          <button type="submit" class="btn btn-primary btn-block">🟢 Record Money</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
