@@ -6,6 +6,7 @@ const $ = (id) => document.getElementById(id);
 /* ---------- API ---------- */
 const TOKEN_KEY = 'pakento_token';
 
+window.PAKENTO_API = 'https://pakento-backend-xxxx.vercel.app';
 const API = window.PAKENTO_API ||
   ((window.location.origin.includes('5500') || window.location.protocol === 'file:')
     ? 'http://localhost:5000'
